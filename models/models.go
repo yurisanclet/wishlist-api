@@ -9,3 +9,8 @@ type User struct {
 	Password   string `json:"password" gorm:"not null"`
 	ProfilePic string `json:"profile_pic"`
 }
+
+type Wishlist struct {
+	gorm.Model
+	
+}
