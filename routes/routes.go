@@ -3,6 +3,8 @@ package routes
 import (
 	"backend/controllers/auth"
 	userController "backend/controllers/user"
+	wishItemController "backend/controllers/wishitem"
+	wishlistController "backend/controllers/wishlist"
 	"backend/middlewares"
 	"backend/services"
 
@@ -14,7 +16,17 @@ func RegisterRoutes(router *gin.Engine){
 
 	userRoutes := router.Group("/api/user")
 	{
-		userRoutes.POST("/register", middlewares.AuthMiddleware(jwtService) ,userController.RegisterHandler)
+		userRoutes.POST("/register", userController.RegisterHandler)
+	}
+
+	wishListRoutes := router.Group("/api/wishlist")
+	{
+		wishListRoutes.POST("/create", middlewares.AuthMiddleware(jwtService), wishlistController.CreateWishList)
+	}
+
+	wishItemRoutes := router.Group("/api/wishitem")
+	{
+		wishItemRoutes.POST("/create", middlewares.AuthMiddleware(jwtService), wishItemController.CreateWishItem)
 	}
 
 	authRoutes := router.Group("/api/auth")

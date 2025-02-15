@@ -11,7 +11,7 @@ import (
 
 type JWTService interface {
 	GenerateToken(email string) (string, error)
-	ValidateToken(token string) (*jwt.Token, error)
+	ValidateToken(token string) (string, error)
 }
 
 type jwtServiceImpl struct{
@@ -39,8 +39,7 @@ func (j *jwtServiceImpl) GenerateToken(email string) (string, error) {
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))   
 }
 
-// ValidateToken implements JWTService.
-func (j *jwtServiceImpl) ValidateToken(tokenString string) (*jwt.Token, error) {
+func (j *jwtServiceImpl) ValidateToken(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			fmt.Println("❌ ERRO: Método de assinatura inválido")
@@ -51,17 +50,16 @@ func (j *jwtServiceImpl) ValidateToken(tokenString string) (*jwt.Token, error) {
 
 	if err != nil {
 		fmt.Println("❌ ERRO AO VALIDAR TOKEN:", err)
-		return nil, err
+		return "", err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println("✅ TOKEN VÁLIDO")
-		fmt.Println("EMAIL NO TOKEN:", claims["sub"])
-	} else {
-		fmt.Println("❌ TOKEN INVÁLIDO")
-		return nil, errors.New("token inválido")
+		email, ok := claims["sub"].(string)
+		if !ok {
+			return "", errors.New("email inválido no token")
+		}
+		return email, nil
 	}
 
-	return token, nil
-
+	return "", errors.New("token inválido")
 }

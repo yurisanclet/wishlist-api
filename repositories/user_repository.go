@@ -43,4 +43,3 @@ func (u *userRepositoryImpl) GetUserById(id uint) (*models.User, error) {
 	}
 	return &user, nil
 }
-

@@ -17,20 +17,23 @@ func AuthMiddleware(jwtService services.JWTService) gin.HandlerFunc {
 			return
 		}
 
-		token := strings.Split(authHeader, " ")
-		if len(token) != 2 || token[0] != "Bearer" {
+		tokenParts := strings.Split(authHeader, " ")
+		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
 			ctx.Abort()
 			return
 		}
 		
+		token := tokenParts[1]
 
-		_, err := jwtService.ValidateToken(token[1])
+		email, err := jwtService.ValidateToken(token)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			ctx.Abort()
 			return
 		}
+
+		ctx.Set("email", email)
 
 		ctx.Next()
 	}

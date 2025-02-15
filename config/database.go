@@ -31,6 +31,8 @@ func (c Config) ConnectDatabase(config Config) {
 	}
 
 	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Wishlist{})
+	db.AutoMigrate(&models.WishItem{})
 
 	DB = db
 	log.Println("Database connected")
